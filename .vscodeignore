@@ -1,0 +1,9 @@
+src/
+test/
+node_modules/
+.vscode/
+docker-compose.yml
+tsconfig.json
+package-lock.json
+.gitignore
+*.vsix

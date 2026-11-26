@@ -1,0 +1,32 @@
+/* Colours come from the active VS Code theme, so the grid follows light, dark and high-contrast themes. */
+body { margin: 0; padding: 0; font-family: var(--vscode-font-family); font-size: var(--vscode-font-size); color: var(--vscode-foreground); }
+#app { display: flex; flex-direction: column; height: 100vh; }
+.bar, .tabs { display: flex; flex: none; align-items: center; gap: 4px; padding: 4px 8px; }
+.wrap { flex: 1; overflow: auto; border-block: 1px solid var(--vscode-panel-border); }
+.empty { padding: 4px 12px; opacity: .8; }
+.count { margin-left: auto; opacity: .8; }
+.ro { margin-left: 8px; font-style: italic; opacity: .8; cursor: help; }
+
+button {
+  font: inherit; padding: 2px 8px; border-radius: 2px; cursor: pointer;
+  color: var(--vscode-button-secondaryForeground); background: var(--vscode-button-secondaryBackground);
+  border: 1px solid var(--vscode-button-border, transparent);
+}
+button:hover:not(:disabled) { background: var(--vscode-button-secondaryHoverBackground); }
+button:disabled { opacity: .5; cursor: default; }
+button.primary:not(:disabled), .tabs button[aria-selected="true"] { color: var(--vscode-button-foreground); background: var(--vscode-button-background); }
+button:focus-visible, table:focus-visible { outline: 1px solid var(--vscode-focusBorder); outline-offset: -1px; }
+
+/* separate borders: with collapse, the sticky header loses its borders while scrolling */
+table { border-collapse: separate; border-spacing: 0; }
+th, td {
+  padding: 2px 6px; max-width: 320px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-align: left;
+  border-right: 1px solid var(--vscode-panel-border); border-bottom: 1px solid var(--vscode-panel-border);
+}
+thead th { position: sticky; top: 0; z-index: 1; font-weight: 600; background: var(--vscode-editorWidget-background); }
+tbody th { font-weight: normal; text-align: right; opacity: .6; user-select: none; }
+td.null { font-size: .85em; font-style: italic; opacity: .6; }
+td.dirty, tr.new td { background: var(--vscode-diffEditor-insertedTextBackground); }
+tr.del td { background: var(--vscode-diffEditor-removedTextBackground); text-decoration: line-through; }
+td.sel { outline: 1px solid var(--vscode-focusBorder); outline-offset: -1px; background: var(--vscode-list-inactiveSelectionBackground); }
+td[contenteditable] { overflow: visible; text-overflow: clip; background: var(--vscode-input-background); color: var(--vscode-input-foreground); opacity: 1; font-size: inherit; font-style: normal; }

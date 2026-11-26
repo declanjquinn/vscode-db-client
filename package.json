@@ -1,0 +1,303 @@
+{
+  "name": "vscode-db-client",
+  "displayName": "DB Client",
+  "description": "A simple MySQL and PostgreSQL client laid out like MySQL Workbench.",
+  "version": "0.1.0",
+  "publisher": "local",
+  "private": true,
+  "engines": {
+    "vscode": "^1.90.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "main": "./dist/extension.js",
+  "activationEvents": [
+    "onLanguage:sql"
+  ],
+  "scripts": {
+    "build": "esbuild src/extension.ts --bundle --platform=node --format=cjs --external:vscode --external:pg-native --outfile=dist/extension.js",
+    "check": "tsc --noEmit",
+    "package": "npm run build && npx --yes @vscode/vsce package --no-dependencies --allow-missing-repository --skip-license",
+    "test": "node --test src/sql.test.ts",
+    "test:db": "node --test src/drivers.test.ts"
+  },
+  "contributes": {
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "dbClient",
+          "title": "DB Client",
+          "icon": "media/db.svg"
+        }
+      ],
+      "panel": [
+        {
+          "id": "dbClientPanel",
+          "title": "DB Client",
+          "icon": "media/db.svg"
+        }
+      ]
+    },
+    "views": {
+      "dbClient": [
+        {
+          "id": "dbClient.navigator",
+          "name": "Schemas"
+        },
+        {
+          "id": "dbClient.objectInfo",
+          "name": "Object Info"
+        }
+      ],
+      "dbClientPanel": [
+        {
+          "id": "dbClient.results",
+          "name": "Result Grid",
+          "type": "webview"
+        },
+        {
+          "id": "dbClient.output",
+          "name": "Action Output"
+        }
+      ]
+    },
+    "viewsWelcome": [
+      {
+        "view": "dbClient.navigator",
+        "contents": "No connections yet.\n[Add Connection](command:dbClient.addConnection)"
+      },
+      {
+        "view": "dbClient.objectInfo",
+        "contents": "Select a table to see its columns."
+      },
+      {
+        "view": "dbClient.output",
+        "contents": "Executed statements are listed here."
+      }
+    ],
+    "commands": [
+      {
+        "command": "dbClient.addConnection",
+        "title": "Add Connection",
+        "category": "DB Client",
+        "icon": "$(add)"
+      },
+      {
+        "command": "dbClient.editConnection",
+        "title": "Edit Connection",
+        "category": "DB Client"
+      },
+      {
+        "command": "dbClient.deleteConnection",
+        "title": "Delete Connection",
+        "category": "DB Client"
+      },
+      {
+        "command": "dbClient.disconnect",
+        "title": "Disconnect",
+        "category": "DB Client"
+      },
+      {
+        "command": "dbClient.refresh",
+        "title": "Refresh Schemas",
+        "category": "DB Client",
+        "icon": "$(refresh)"
+      },
+      {
+        "command": "dbClient.switchConnection",
+        "title": "Switch Active Connection",
+        "category": "DB Client"
+      },
+      {
+        "command": "dbClient.setDefaultSchema",
+        "title": "Set as Default Schema",
+        "category": "DB Client"
+      },
+      {
+        "command": "dbClient.selectRows",
+        "title": "Select Rows",
+        "category": "DB Client",
+        "icon": "$(table)"
+      },
+      {
+        "command": "dbClient.copyName",
+        "title": "Copy Name",
+        "category": "DB Client"
+      },
+      {
+        "command": "dbClient.execute",
+        "title": "Execute (Selection or All)",
+        "category": "DB Client",
+        "icon": "$(zap)"
+      },
+      {
+        "command": "dbClient.executeCurrent",
+        "title": "Execute Current Statement",
+        "category": "DB Client",
+        "icon": "$(play)"
+      },
+      {
+        "command": "dbClient.stop",
+        "title": "Stop Query",
+        "category": "DB Client",
+        "icon": "$(debug-stop)"
+      },
+      {
+        "command": "dbClient.setRowLimit",
+        "title": "Set Row Limit",
+        "category": "DB Client"
+      },
+      {
+        "command": "dbClient.clearOutput",
+        "title": "Clear Action Output",
+        "category": "DB Client",
+        "icon": "$(clear-all)"
+      }
+    ],
+    "menus": {
+      "view/title": [
+        {
+          "command": "dbClient.addConnection",
+          "when": "view == dbClient.navigator",
+          "group": "navigation@1"
+        },
+        {
+          "command": "dbClient.refresh",
+          "when": "view == dbClient.navigator",
+          "group": "navigation@2"
+        },
+        {
+          "command": "dbClient.clearOutput",
+          "when": "view == dbClient.output",
+          "group": "navigation"
+        }
+      ],
+      "view/item/context": [
+        {
+          "command": "dbClient.disconnect",
+          "when": "view == dbClient.navigator && viewItem == connection",
+          "group": "1@1"
+        },
+        {
+          "command": "dbClient.editConnection",
+          "when": "view == dbClient.navigator && viewItem == connection",
+          "group": "1@2"
+        },
+        {
+          "command": "dbClient.deleteConnection",
+          "when": "view == dbClient.navigator && viewItem == connection",
+          "group": "2@1"
+        },
+        {
+          "command": "dbClient.setDefaultSchema",
+          "when": "view == dbClient.navigator && viewItem == schema"
+        },
+        {
+          "command": "dbClient.selectRows",
+          "when": "view == dbClient.navigator && viewItem == table",
+          "group": "inline"
+        },
+        {
+          "command": "dbClient.selectRows",
+          "when": "view == dbClient.navigator && viewItem == table",
+          "group": "1@1"
+        },
+        {
+          "command": "dbClient.copyName",
+          "when": "view == dbClient.navigator && viewItem =~ /^(schema|table)$/",
+          "group": "1@2"
+        }
+      ],
+      "editor/title": [
+        {
+          "command": "dbClient.execute",
+          "when": "editorLangId == sql",
+          "group": "navigation@1"
+        },
+        {
+          "command": "dbClient.executeCurrent",
+          "when": "editorLangId == sql",
+          "group": "navigation@2"
+        },
+        {
+          "command": "dbClient.stop",
+          "when": "editorLangId == sql && dbClient.running",
+          "group": "navigation@3"
+        },
+        {
+          "command": "dbClient.setRowLimit",
+          "when": "editorLangId == sql",
+          "group": "dbClient"
+        },
+        {
+          "command": "dbClient.switchConnection",
+          "when": "editorLangId == sql",
+          "group": "dbClient"
+        }
+      ],
+      "commandPalette": [
+        {
+          "command": "dbClient.editConnection",
+          "when": "false"
+        },
+        {
+          "command": "dbClient.deleteConnection",
+          "when": "false"
+        },
+        {
+          "command": "dbClient.disconnect",
+          "when": "false"
+        },
+        {
+          "command": "dbClient.setDefaultSchema",
+          "when": "false"
+        },
+        {
+          "command": "dbClient.selectRows",
+          "when": "false"
+        },
+        {
+          "command": "dbClient.copyName",
+          "when": "false"
+        }
+      ]
+    },
+    "keybindings": [
+      {
+        "command": "dbClient.execute",
+        "key": "ctrl+shift+enter",
+        "mac": "cmd+shift+enter",
+        "when": "editorTextFocus && editorLangId == sql"
+      },
+      {
+        "command": "dbClient.executeCurrent",
+        "key": "ctrl+enter",
+        "mac": "cmd+enter",
+        "when": "editorTextFocus && editorLangId == sql"
+      }
+    ],
+    "configuration": {
+      "title": "DB Client",
+      "properties": {
+        "dbClient.rowLimit": {
+          "type": "integer",
+          "default": 1000,
+          "minimum": 0,
+          "description": "LIMIT appended to SELECT statements that have none. 0 disables it."
+        }
+      }
+    }
+  },
+  "dependencies": {
+    "mysql2": "^3.24.6",
+    "pg": "^8.23.1"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.11",
+    "@types/pg": "^8.23.1",
+    "@types/vscode": "~1.90.0",
+    "esbuild": "^0.28.2",
+    "typescript": "^7.0.2"
+  }
+}
